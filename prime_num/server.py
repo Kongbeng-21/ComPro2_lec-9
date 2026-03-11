@@ -38,14 +38,18 @@ def get_prime_data(number: int):
     p.start()
     p.join(timeout=10)
     # TODO: Execute calculate_primes(number) in a separate process 
-    pass
     # TODO: Enforce the strictly 10‐second timeout here
-    
+    if p.is_alive():
+        p.terminate()
+        p.join()
+        raise HTTPException(status_code=408, detail="Computation timeout")
+    primes_before, last_prime_before, next_prime_after = q.get()
+    time_taken = time.time() - start_time
     # Return the dictionary matching the JSON requirement
     return {
     "query_number": number, 
-    "primes_before": 0, 
-    "last_prime_before": 0, 
-    "next_prime_after": 0, 
-    "time_taken": 0.0
+    "primes_before": primes_before, 
+    "last_prime_before": last_prime_before, 
+    "next_prime_after": next_prime_after, 
+    "time_taken": round(time_taken,2)
     }
